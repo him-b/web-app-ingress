@@ -41,10 +41,14 @@ pipeline {
         }
 
         stage('Clone Repository') {
-            steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/manjukolkar/scroll-web.git'
-            }
-        }
+    steps {
+        checkout([$class: 'GitSCM',
+                  branches: [[name: "refs/heads/${env.BRANCH_NAME}"]],
+                  doGenerateSubmoduleConfigurations: false,
+                  extensions: [],
+                  userRemoteConfigs: [[url: 'https://github.com/him-b/web-app-ingress.git']]])
+    }
+}
 
         stage('Build Docker Image') {
             steps {
@@ -114,4 +118,5 @@ pipeline {
         }
     }
 }
+
 
