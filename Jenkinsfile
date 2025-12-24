@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'manjukolkar007/test-dev:latest'
-        DEPLOY_FILE  = 'deploy.yaml'
-        DOMAIN       = 'scrollweb.duckdns.org'
+        DOCKER_IMAGE = 'himani708/ingress:v1'
+        
     }
 
     stages {
@@ -41,14 +40,10 @@ pipeline {
         }
 
         stage('Clone Repository') {
-    steps {
-        checkout([$class: 'GitSCM',
-                  branches: [[name: "refs/heads/${env.BRANCH_NAME}"]],
-                  doGenerateSubmoduleConfigurations: false,
-                  extensions: [],
-                  userRemoteConfigs: [[url: 'https://github.com/him-b/web-app-ingress.git']]])
-    }
-}
+            steps {
+                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/him-b/web-app-ingress.git'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -82,7 +77,9 @@ pipeline {
             steps {
                 sh '''
                 echo "🚀 Deploying to Kubernetes..."
-                microk8s.kubectl apply -f $DEPLOY_FILE
+                microk8s.kubectl apply -f deploy.yaml
+                microk8s.kubectl apply -f service.yml
+                microk8s.kubectl apply -f ingress.yml
                 echo "Waiting for pods to stabilize..."
                 sleep 20
                 microk8s.kubectl get pods
@@ -90,20 +87,7 @@ pipeline {
             }
         }
 
-        stage('Apply Ingress & Verify') {
-            steps {
-                sh '''
-                echo "🌐 Applying Ingress for domain $DOMAIN ..."
-                microk8s.kubectl apply -f $DEPLOY_FILE
-                echo "Waiting for ingress to be ready..."
-                sleep 20
-                microk8s.kubectl get ingress
-                echo "🔍 Verifying application availability..."
-                curl -I http://$DOMAIN || echo "⚠️ Could not verify via curl, please check browser."
-                echo "✅ Deployment complete! Access: http://$DOMAIN"
-                '''
-            }
-        }
+        
     }
 
     post {
@@ -118,5 +102,3 @@ pipeline {
         }
     }
 }
-
-
