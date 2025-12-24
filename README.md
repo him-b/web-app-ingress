@@ -1,3 +1,5 @@
+simple nginx-app-deploy using jenkins, docker,kubernetes(microk8s)(installing all of these on ubuntu ec2 machine)
+
 install necessary tools such as jenkins,docker and microk8s and add usergroups to jenkins
 1)sudo snap alias microk8s.kubectl kubectl(alias for microk8s.kubectl)
 install ingress controller inside microk8s using command:
