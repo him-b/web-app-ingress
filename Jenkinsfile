@@ -32,7 +32,7 @@ pipeline {
                     def branchInput = input(
                         id: 'branchSelect',
                         message: 'Select the branch to build:',
-                        parameters: [string(name: 'BRANCH', defaultValue: 'master', description: 'Enter the branch name to build')]
+                        parameters: [string(name: 'BRANCH', defaultValue: 'main', description: 'Enter the branch name to build')]
                     )
                     env.BRANCH_NAME = branchInput
                     echo "✅ Selected Branch: ${env.BRANCH_NAME}"
@@ -114,3 +114,4 @@ pipeline {
         }
     }
 }
+
